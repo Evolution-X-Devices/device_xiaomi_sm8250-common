@@ -65,6 +65,7 @@ $(call soong_config_set,camera,package_name,com.android.camera)
 $(call soong_config_set_bool,camera,override_format_from_reserved,true)
 
 # Display
+BOARD_USES_ADRENO := true
 TARGET_ADDITIONAL_GRALLOC_10_USAGE_BITS := 0x546C00000000
 TARGET_GRALLOC_HANDLE_HAS_RESERVED_SIZE := true
 TARGET_NO_RAW10_CUSTOM_FORMAT := true
