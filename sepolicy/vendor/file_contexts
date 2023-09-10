@@ -19,6 +19,9 @@
 # Charger
 /vendor/bin/batterysecret                                                                           u:object_r:vendor_batterysecret_exec:s0
 
+# Data files
+/data/vendor/dolby(/.*)?                      u:object_r:vendor_data_file:s0
+
 # Fingerprint
 /vendor/bin/hw/android\.hardware\.biometrics\.fingerprint-service\.xiaomi                           u:object_r:hal_fingerprint_default_exec:s0
 
@@ -37,6 +40,9 @@
 # This is labeled as vendor_public_adsprpcd_file as it needs to be read by apps
 # (e.g. Google Camera App)
 /mnt/vendor/dsp/fastrpc_shell_3                                                                     u:object_r:vendor_public_adsprpcd_file:s0
+
+# HALs
+/vendor/bin/hw/vendor\.dolby\.hardware\.dms@2\.0-service                                            u:object_r:hal_dms_default_exec:s0
 
 # IR
 /vendor/bin/hw/android\.hardware\.ir-service\.xiaomi                                                u:object_r:hal_ir_default_exec:s0
