@@ -256,6 +256,11 @@ PRODUCT_PACKAGES += \
 
 $(call soong_config_set,lineage_health,charging_control_supports_bypass,false)
 
+# Media
+PRODUCT_PACKAGES += \
+    libstagefrighthw \
+    libstagefright_foundation-v33
+
 # Media configs
 PRODUCT_PACKAGES += \
     media_codecs_c2.xml \
