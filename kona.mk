@@ -192,9 +192,8 @@ ifeq ($(TARGET_HAS_UDFPS),true)
 $(call soong_config_set,surfaceflinger,udfps_lib,//hardware/xiaomi:libudfps_extension.xiaomi)
 
 PRODUCT_PACKAGES += \
-    libudfpshandler
-
-$(call soong_config_set,surfaceflinger,udfps_lib,//hardware/xiaomi:libudfps_extension.xiaomi)
+    libudfpshandler \
+    sensors.udfps
 endif
 endif
 
