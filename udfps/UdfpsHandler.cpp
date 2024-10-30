@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2022 The LineageOS Project
  *
@@ -9,6 +10,7 @@
 #include "UdfpsHandler.h"
 
 #include <android-base/logging.h>
+#include <android-base/unique_fd.h>
 #include <fcntl.h>
 #include <poll.h>
 #include <thread>
@@ -18,13 +20,17 @@
 #define PARAM_NIT_FOD 1
 #define PARAM_NIT_NONE 0
 
+#define FOD_STATUS_ON 1
+#define FOD_STATUS_OFF -1
+
+#define TOUCH_DEV_PATH "/dev/xiaomi-touch"
+#define TOUCH_FOD_ENABLE 10
+#define TOUCH_MAGIC 0x5400
+#define TOUCH_IOC_SETMODE TOUCH_MAGIC + 0
+
 static const char* kFodUiPaths[] = {
         "/sys/devices/platform/soc/soc:qcom,dsi-display-primary/fod_ui",
         "/sys/devices/platform/soc/soc:qcom,dsi-display/fod_ui",
-};
-
-static const char* kFodStatusPaths[] = {
-        "/sys/touchpanel/fod_status",
 };
 
 static bool readBool(int fd) {
@@ -50,6 +56,7 @@ class XiaomiKonaUdfpsHandler : public UdfpsHandler {
   public:
     void init(fingerprint_device_t *device) {
         mDevice = device;
+        touch_fd_ = android::base::unique_fd(open(TOUCH_DEV_PATH, O_RDWR));
 
         std::thread([this]() {
             int fd;
@@ -63,14 +70,6 @@ class XiaomiKonaUdfpsHandler : public UdfpsHandler {
             if (fd < 0) {
                 LOG(ERROR) << "failed to open fd, err: " << fd;
                 return;
-            }
-
-            int fodStatusFd;
-            for (auto& path : kFodStatusPaths) {
-                fodStatusFd = open(path, O_RDWR);
-                if (fodStatusFd >= 0) {
-                    break;
-                }
             }
 
             struct pollfd fodUiPoll = {
@@ -88,9 +87,6 @@ class XiaomiKonaUdfpsHandler : public UdfpsHandler {
 
                 mDevice->extCmd(mDevice, COMMAND_NIT,
                                 readBool(fd) ? PARAM_NIT_FOD : PARAM_NIT_NONE);
-                if (fodStatusFd >= 0) {
-                    write(fodStatusFd, readBool(fd) ? "1" : "0", 1);
-                }
             }
         }).detach();
     }
@@ -103,15 +99,27 @@ class XiaomiKonaUdfpsHandler : public UdfpsHandler {
         // nothing
     }
 
-    void onAcquired(int32_t /*result*/, int32_t /*vendorCode*/) {
-        // nothing
+    void onAcquired(int32_t result, int32_t vendorCode) {
+        if (result == FINGERPRINT_ACQUIRED_GOOD) {
+            int arg[2] = {TOUCH_FOD_ENABLE, FOD_STATUS_OFF};
+            ioctl(touch_fd_.get(), TOUCH_IOC_SETMODE, &arg);
+        } else if (vendorCode == 21 || vendorCode == 23) {
+            /*
+             * vendorCode = 21 waiting for fingerprint authentication
+             * vendorCode = 23 waiting for fingerprint enroll
+             */
+            int arg[2] = {TOUCH_FOD_ENABLE, FOD_STATUS_ON};
+            ioctl(touch_fd_.get(), TOUCH_IOC_SETMODE, &arg);
+        }
     }
 
     void cancel() {
-        // nothing
+        int arg[2] = {TOUCH_FOD_ENABLE, FOD_STATUS_OFF};
+        ioctl(touch_fd_.get(), TOUCH_IOC_SETMODE, &arg);
     }
   private:
     fingerprint_device_t *mDevice;
+    android::base::unique_fd touch_fd_;
 };
 
 static UdfpsHandler* create() {
@@ -126,3 +134,4 @@ extern "C" UdfpsHandlerFactory UDFPS_HANDLER_FACTORY = {
     .create = create,
     .destroy = destroy,
 };
+
