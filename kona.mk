@@ -190,6 +190,8 @@ PRODUCT_COPY_FILES += \
 ifeq ($(TARGET_HAS_UDFPS),true)
 PRODUCT_PACKAGES += \
     libudfpshandler
+
+$(call soong_config_set,surfaceflinger,udfps_lib,//hardware/xiaomi:libudfps_extension.xiaomi)
 endif
 endif
 

@@ -74,11 +74,6 @@ endif
 # Filesystem
 TARGET_FS_CONFIG_GEN := $(COMMON_PATH)/config.fs
 
-# Fingerprint
-ifeq ($(TARGET_HAS_UDFPS),true)
-TARGET_SURFACEFLINGER_UDFPS_LIB := //hardware/xiaomi:libudfps_extension.xiaomi
-endif
-
 # Init
 $(call soong_config_set,libinit,vendor_init_lib,//$(COMMON_PATH):init_xiaomi_kona)
 
