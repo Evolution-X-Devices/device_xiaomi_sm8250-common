@@ -410,6 +410,7 @@ PRODUCT_PACKAGES += \
     libwifi-hal-qcom \
     NcmTetheringOverlay \
     WifiResCommon \
+    NfcRes \
     wpa_supplicant \
     wpa_supplicant.conf
 
