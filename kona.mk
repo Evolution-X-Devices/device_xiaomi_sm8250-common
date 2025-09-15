@@ -157,7 +157,10 @@ endif
 
 # Device-specific settings
 PRODUCT_PACKAGES += \
-    XiaomiParts
+    DSPVolumeSynchronizer \
+
+# XiaomiParts
+-include packages/apps/XiaomiParts/device.mk
 
 # Display
 PRODUCT_PACKAGES += \
