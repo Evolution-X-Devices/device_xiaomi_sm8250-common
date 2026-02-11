@@ -59,7 +59,7 @@ TARGET_BOOTLOADER_BOARD_NAME := kona
 TARGET_NO_BOOTLOADER := true
 
 # Camera - Miui
-TARGET_CAMERA_PACKAGE_NAME := com.android.camera
+$(call soong_config_set,camera,package_name,com.android.camera)
 
 # Camera - HIDL overrideFormat
 $(call soong_config_set,camera,override_format_from_reserved,true)
