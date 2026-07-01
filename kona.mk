@@ -214,7 +214,10 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     IFAAService
 
-# IPACM
+# ION
+$(call soong_config_set_bool,libion,legacy_impl,true)
+
+#  IPACM
 PRODUCT_PACKAGES += \
     ipacm \
     IPACM_cfg.xml
